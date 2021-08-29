@@ -1,5 +1,5 @@
 import { Pose, Options } from './types.ts';
-import { vectorizeAndNormalize } from './vectorizeAndNormalize.ts';
+import { vectorizeAndNormalize } from './vectorizeAndNormalize.js';
 import { cosineSimilarity, cosineDistanceMatching, weightedDistanceMatching } from './strategies.js';
 
 export function poseSimilarity(pose1, pose2, overridenOptions){

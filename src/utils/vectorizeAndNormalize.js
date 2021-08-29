@@ -1,6 +1,4 @@
-import { Pose, Options, WeightOption, WeightOptionMode } from './types';
-
-export function vectorizeAndNormalize(pose: Pose, options: Options): number[][] {
+export function vectorizeAndNormalize(pose, options) {
   let [vectorPoseXY, vecotPoseTransform, vectorPoseConfidences] = convertPoseToVectors(pose, options.customWeight);
 
   vectorPoseXY = scaleAndTranslate(vectorPoseXY, vecotPoseTransform);
@@ -28,18 +26,18 @@ export function vectorizeAndNormalize(pose: Pose, options: Options): number[][] 
  *          [score1, score2, ..., score17, sumOfScores]
  *          Will be used for the weightedDistance strategy
  */
-export function convertPoseToVectors(pose: Pose, weightOption?: WeightOption): number[][] {
-  let vectorPoseXY: number[] = [];
+export function convertPoseToVectors(pose, weightOption) {
+  let vectorPoseXY = [];
 
   let translateX = Number.POSITIVE_INFINITY;
   let translateY = Number.POSITIVE_INFINITY;
   let scaler = Number.NEGATIVE_INFINITY;
 
   let vectorScoresSum = 0;
-  let vectorScores: number[] = [];
+  let vectorScores = [];
 
   // get weightOption if exists
-  let mode: WeightOptionMode, scores: Record<string, number> | number[];
+  let mode, scores;
   if (weightOption) {
     mode = weightOption.mode
     if (!mode || typeof mode !== 'string') throw new TypeError(`[Bad customWeight option] A mode must be specified and should be either 'multiply', 'replace' or 'add'.`);
@@ -50,8 +48,8 @@ export function convertPoseToVectors(pose: Pose, weightOption?: WeightOption): n
   }
 
   pose.keypoints.forEach((point, index) => {
-    const x: number = point.position.x;
-    const y: number = point.position.y;
+    const x = point.position.x;
+    const y = point.position.y;
 
     vectorPoseXY.push(x, y);
 
@@ -62,7 +60,7 @@ export function convertPoseToVectors(pose: Pose, weightOption?: WeightOption): n
     let score = point.score;
     // modify original score according to the weightOption
     if (mode && scores) {
-      let scoreModifier: boolean | number = false;
+      let scoreModifier = false;
       // try to get scores from the weightOption
       if (scores[point.part] || scores[point.part] === 0) scoreModifier = scores[point.part]
       if (scores[index] || scores[index] === 0) scoreModifier = scores[index]
@@ -108,7 +106,7 @@ export function convertPoseToVectors(pose: Pose, weightOption?: WeightOption): n
  * @return An scaled and translated pose keypoints x, y vector in size 1*1
  *          [x1, y1, x2, y2, ... , x17, y17]
  */
-export function scaleAndTranslate(vectorPoseXY: number[], transformValues: number[]): number[] {
+export function scaleAndTranslate(vectorPoseXY, transformValues){
   const [transX, transY, scaler] = transformValues;
 
   return vectorPoseXY.map((position, index) => {
@@ -127,7 +125,7 @@ export function scaleAndTranslate(vectorPoseXY: number[], transformValues: numbe
  * @return An L2 normalized pose keypoints x, y vector in size 1*1
  *          [x1, y1, x2, y2, ... , x17, y17]
  */
-export function L2Normalization(vectorPoseXY: number[]): number[] {
+export function L2Normalization(vectorPoseXY){
   let absVectorPoseXY = 0;
   vectorPoseXY.forEach(position => {
     absVectorPoseXY += Math.pow(position, 2);
